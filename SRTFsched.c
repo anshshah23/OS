@@ -18,7 +18,7 @@ int main() {
     }
 
     // Sort processes based on arrival time
-    for (i = 0; i < p - 1; i++) {
+    for (i = 0; i < p ; i++) {
         for (j = 0; j < p - i - 1; j++) {
             if (at[j] > at[j + 1]) {
                 temp = bt[j];
