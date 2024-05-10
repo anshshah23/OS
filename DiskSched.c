@@ -33,6 +33,7 @@ int main() {
     LOOK(requests, n, head);
     CLOOK(requests, n, head);
     SSTF(requests, n, head);
+    FCFS(requests, n, head);
     SCAN(requests, n, head, true); // true for left direction
     SCAN(requests, n, head, false); // false for right direction
     CSCAN(requests, n, head);
@@ -67,7 +68,6 @@ void LOOK(int requests[], int n, int head) {
             }
         }
     }
-
     printf("Total head movement: %d\n", total_movement);
 }
 
@@ -126,6 +126,22 @@ void SSTF(int requests[], int n, int head) {
         total_movement += min_distance;
         head = requests[closest_request];
         printf("Servicing request %d\n", requests[closest_request]);
+    }
+
+    printf("Total head movement: %d\n", total_movement);
+}
+
+void FCFS(int requests[], int n, int head) {
+    printf("\nFCFS Algorithm:\n");
+
+    int total_movement = 0;
+    int prev_head = head;
+
+    // Service requests in the order they appear
+    for (int i = 0; i < n; i++) {
+        printf("Servicing request %d\n", requests[i]);
+        total_movement += abs(requests[i] - prev_head);
+        prev_head = requests[i];
     }
 
     printf("Total head movement: %d\n", total_movement);
