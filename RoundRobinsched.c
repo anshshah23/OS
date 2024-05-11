@@ -3,7 +3,7 @@
 
 int main() {
     // Initialize variables
-    int i, n, ts, sum = 0, count = 0, y, quantum, wt = 0, tat = 0;
+    int i, n, sum = 0, count = 0, y, quantum, wt = 0, tat = 0;
     float avg_wt, avg_tat;
     printf("Enter the total number of processes in the system: ");
     scanf("%d", &n);

@@ -1,183 +1,159 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdbool.h>
 
-void fifo(int *pages, int numberOfPages, int frames);
-void lru(int *pages, int numberOfPages, int frames);
-void optimal(int *pages, int numberOfPages, int frames);
-int inFrame(int page, int *frame, int frames);
-int findOptimalIndex(int *pages, int *frame, int start, int numberOfPages, int frames);
-int maxIndex(int *map, int frames);
-void printFrames(int *frame, int frames);
+#define MAX_PAGES 100
 
-int main() {
-    int choice;
-    while (1) {
-        printf("Choose the Page Replacement Algorithm:\n");
-        printf("1. FIFO\n");
-        printf("2. LRU\n");
-        printf("3. Optimal\n");
-        printf("4. Exit\n");
-        printf("Enter your choice: ");
-        
-        scanf("%d", &choice);
-
-        if (choice == 4) {
-            printf("Exiting...\n");
-            break;
-        }
-
-        int frames, numberOfPages;
-        printf("Enter number of frames: ");
-        scanf("%d", &frames);
-
-        printf("Enter the number of pages: ");
-        scanf("%d", &numberOfPages);
-
-        int *pages = (int*)malloc(numberOfPages * sizeof(int));
-        printf("Enter the page reference string:\n");
-        for (int i = 0; i < numberOfPages; i++) {
-            scanf("%d", &pages[i]);
-        }
-
-        switch (choice) {
-            case 1:
-                fifo(pages, numberOfPages, frames);
-                break;
-            case 2:
-                lru(pages, numberOfPages, frames);
-                break;
-            case 3:
-                optimal(pages, numberOfPages, frames);
-                break;
-            default:
-                printf("Invalid choice. Please select again.\n");
-        }
-        free(pages);
-    }
-    return 0;
-}
-
-void fifo(int *pages, int numberOfPages, int frames) {
+// FIFO Page Replacement Algorithm
+void FIFO(int pages[], int n, int capacity) {
     int pageFaults = 0;
-    int *frame = (int*)malloc(frames * sizeof(int));
-    for (int i = 0; i < frames; i++) {
-        frame[i] = -1;
-    }
-    int j = 0;
-    printf("Page Reference\tFrames\n");
-    for (int i = 0; i < numberOfPages; i++) {
-        int page = pages[i];
-        int flag = 1;
-        for (int k = 0; k < frames; k++) {
-            if (frame[k] == page) {
-                flag = 0;
+    int rear = -1;
+    int memory[capacity];
+
+    for (int i = 0; i < n; i++) {
+        int currentPage = pages[i];
+        bool pageHit = false;
+
+        for (int j = 0; j < capacity; j++) {
+            if (memory[j] == currentPage) {
+                pageHit = true;
                 break;
             }
         }
-        if (flag) {
-            frame[j] = page;
-            j = (j + 1) % frames;
-            pageFaults++;
-            printFrames(frame, frames);
+
+        if (!pageHit) {
+            ++pageFaults;
+            ++rear;
+            rear %= capacity;
+            memory[rear] = currentPage;
         }
     }
-    printf("Total Page Faults: %d\n", pageFaults);
-    free(frame);
+
+    printf("FIFO Page Faults: %d\n", pageFaults);
 }
 
-void lru(int *pages, int numberOfPages, int frames) {
-    int pageFaults = 0;
-    int *frame = (int*)malloc(frames * sizeof(int));
-    for (int i = 0; i < frames; i++) {
-        frame[i] = -1;
+// Function to find the index of the page to be replaced (for LRU)
+int findPageToReplaceLRU(int memory[], int capacity) {
+    int minIndex = 0;
+    int minCounter = memory[0];
+    for (int i = 1; i < capacity; ++i) {
+        if (memory[i] < minCounter) {
+            minIndex = i;
+            minCounter = memory[i];
+        }
     }
-    printf("Page Reference\tFrames\n");
-    int *stack = (int*)malloc(frames * sizeof(int));
-    int stackSize = 0;
-    for (int i = 0; i < numberOfPages; i++) {
-        int page = pages[i];
-        int flag = 1;
-        for (int j = 0; j < stackSize; j++) {
-            if (stack[j] == page) {
-                flag = 0;
+    return minIndex;
+}
+
+// LRU Page Replacement Algorithm
+void LRU(int pages[], int n, int capacity) {
+    int pageFaults = 0;
+    int memory[capacity];
+    int counter = 0;
+  
+    for (int i = 0; i < n; ++i) {
+        int currentPage = pages[i];
+        bool pageHit = false;
+
+        for (int j = 0; j < capacity; ++j) {
+            if (memory[j] == currentPage) {
+                pageHit = true;
                 break;
             }
         }
-        if (flag) {
-            if (stackSize < frames) {
-                stack[stackSize++] = page;
+
+        if (!pageHit) {
+            ++pageFaults;
+            if (counter < capacity) {
+                memory[counter] = currentPage;
+                ++counter;
             } else {
-                int leastRecentlyUsed = stack[0];
-                int index = 0;
-                for (int k = 0; k < frames; k++) {
-                    if (frame[k] == leastRecentlyUsed) {
-                        index = k;
-                        break;
-                    }
-                }
-                stack[0] = page;
-                frame[index] = page;
-            }
-            pageFaults++;
-        } else {
-            for (int j = 0; j < stackSize; j++) {
-                if (stack[j] == page) {
-                    for (int k = j; k < stackSize - 1; k++) {
-                        stack[k] = stack[k + 1];
-                    }
-                    stack[stackSize - 1] = page;
-                    break;
-                }
+                int index = findPageToReplaceLRU(memory, capacity);
+                memory[index] = currentPage;
             }
         }
-        for (int j = 0; j < stackSize; j++) {
-            frame[j] = stack[j];
-        }
-        printFrames(frame, frames);
     }
-    printf("Total Page Faults: %d\n", pageFaults);
-    free(frame);
-    free(stack);
+    printf("LRU Page Faults: %d\n", pageFaults);
 }
 
-void optimal(int *pages, int numberOfPages, int frames) {
+// Optimal Page Replacement Algorithm
+void Optimal(int pages[], int n, int capacity) {
     int pageFaults = 0;
-    int *frame = (int*)malloc(frames * sizeof(int));
-    for (int i = 0; i < frames; i++) {
-        frame[i] = -1;
+    int memory[capacity];
+
+    for (int i = 0; i < capacity; ++i) {
+        memory[i] = -1;
     }
-    printf("Page Reference\tFrames\n");
-    for (int i = 0; i < numberOfPages; i++) {
-        int page = pages[i];
-        int flag = inFrame(page, frame, frames);
-        if (!flag) {
-            int index = (i == numberOfPages - 1) ? 0 : findOptimalIndex(pages, frame, i + 1, numberOfPages, frames);
-            frame[index] = page;
-            pageFaults++;
-            printFrames(frame, frames);
+
+    for (int i = 0; i < n; ++i) {
+        int currentPage = pages[i];
+        bool pageHit = false;
+
+        for (int j = 0; j < capacity; ++j) {
+            if (memory[j] == currentPage) {
+                pageHit = true;
+                break;
+            }
+        }
+
+        if (!pageHit) {
+            ++pageFaults;
+            int index = findPageToReplaceOptimal(pages, n, memory, capacity, i);
+            memory[index] = currentPage;
         }
     }
-    printf("Total Page Faults: %d\n", pageFaults);
-    free(frame);
+
+    printf("Optimal Page Faults: %d\n", pageFaults);
 }
 
-int inFrame(int page, int *frame, int frames) {
-    for (int i = 0; i < frames; i++) {
-        if (frame[i] == page) {
-            return 1;
+// LFU Page Replacement Algorithm
+void LFU(int pages[], int n, int capacity) {
+    int pageFaults = 0;
+    int memory[capacity];
+    int freq[capacity];
+
+    for (int i = 0; i < capacity; ++i) {
+        memory[i] = -1;
+        freq[i] = 0;
+    }
+
+    for (int i = 0; i < n; ++i) 
+    {
+        int currentPage = pages[i];
+        bool pageHit = false;
+
+        for (int j = 0; j < capacity; ++j) {
+            if (memory[j] == currentPage) {
+                pageHit = true;
+                ++freq[j];
+                break;
+            }
+        }
+
+        if (!pageHit) {
+            ++pageFaults;
+            int minFreqIndex = 0;
+            for (int j = 1; j < capacity; ++j) {
+                if (freq[j] < freq[minFreqIndex]) {
+                    minFreqIndex = j;
+                }
+            }
+            memory[minFreqIndex] = currentPage;
+            freq[minFreqIndex] = 1;
         }
     }
-    return 0;
+
+    printf("LFU Page Faults: %d\n", pageFaults);
 }
 
-int findOptimalIndex(int *pages, int *frame, int start, int numberOfPages, int frames) {
+// Function to find the index of the page to be replaced (for Optimal)
+int findPageToReplaceOptimal(int pages[], int n, int memory[], int capacity, int currentIndex) {
+    int farthest = currentIndex;
     int index = -1;
-    int farthest = start;
-    for (int i = 0; i < frames; i++) {
-        int found = 0;
-        for (int j = start; j < numberOfPages; j++) {
-            if (frame[i] == pages[j]) {
-                found = 1;
+
+    for (int i = 0; i < capacity; ++i) {
+        int j;
+        for (j = currentIndex + 1; j < n; ++j) {
+            if (memory[i] == pages[j]) {
                 if (j > farthest) {
                     farthest = j;
                     index = i;
@@ -185,31 +161,27 @@ int findOptimalIndex(int *pages, int *frame, int start, int numberOfPages, int f
                 break;
             }
         }
-        if (!found) {
+        if (j == n) {
             return i;
         }
     }
-    return (index == -1) ? 0 : index;
+
+    if (index == -1) {
+        return 0;
+    }
+
+    return index;
 }
 
+int main() {
+    int pages[] = {2, 3, 2, 1, 5, 2, 4, 5, 3, 2, 5};
+    int n = sizeof(pages) / sizeof(pages[0]);
+    int capacity = 3;
 
-int maxIndex(int *map, int frames) {
-    int maxIndex = 0;
-    for (int i = 1; i < frames; i++) {
-        if (map[i] > map[maxIndex]) {
-            maxIndex = i;
-        }
-    }
-    return maxIndex;
-}
+    FIFO(pages, n, capacity);
+    LRU(pages, n, capacity);
+    Optimal(pages, n, capacity);
+    LFU(pages, n, capacity);
 
-void printFrames(int *frame, int frames) {
-    for (int i = 0; i < frames; i++) {
-        if (frame[i] != -1) {
-            printf("%d\t", frame[i]);
-        } else {
-            printf("-\t");
-        }
-    }
-    printf("\n");
+    return 0;
 }

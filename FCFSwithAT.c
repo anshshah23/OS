@@ -29,6 +29,7 @@ int main(){
         ct[i+1]=bt[i+1]+ct[i];
         printf("CT of P[%d] is %d \n",i+1,ct[i]);
     }
+    //calculate the waiting time and turnaround time
      for( i = 0 ; i < p ; i++)
     {
         tat[i]=ct[i]-at[i];

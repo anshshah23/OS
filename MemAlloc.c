@@ -5,30 +5,29 @@ int main() {
     int stat[] = {1, 1, 1, 1, 1};
     int PS[4];
     int tm = 0;
-
-    for (int i = 0; i < sizeof(p) / sizeof(p[0]); i++) {
+    for (int i = 0; i < n; i++) {
         tm += p[i];
     }
 
     printf("Enter the size of processes\n");
 
-    printf("P1: ");
-    scanf("%d", &PS[0]);
-    printf("P2: ");
-    scanf("%d", &PS[1]);
-    printf("P3: ");
-    scanf("%d", &PS[2]);
-    printf("P4: ");
-    scanf("%d", &PS[3]);
+    for(int i = 0; i < 4; i++)
+    {
+        printf("P%d: ", i + 1);
+        scanf("%d", &p[i]);
+    }
+
+    int sizeofProc = sizeof(PS) / sizeof(PS[0]);
+    int n = sizeof(p) / sizeof(p[0]);
 
     int amf = 0;
     int ambf = 0;
     int amwf = 0;
 
     printf("\nFirst Fit:\n");
-    for (int i = 0; i < sizeof(PS) / sizeof(PS[0]); i++) {
+    for (int i = 0; i < sizeofProc ; i++) {
         int fp = 0;
-        for (int j = 0; j < sizeof(p) / sizeof(p[0]); j++) {
+        for (int j = 0; j < n; j++) {
             if (PS[i] <= p[j] && stat[j] == 1) {
                 printf("PS%d -> P%d\n", i + 1, j + 1);
                 stat[j] = 0;
@@ -49,10 +48,10 @@ int main() {
     }
 
     printf("\nBest Fit:\n");
-    for (int i = 0; i < sizeof(PS) / sizeof(PS[0]); i++) {
+    for (int i = 0; i < sizeofProc ; i++) {
         int frg = 10000;
         int idx = 10000;
-        for (int j = 0; j < sizeof(p) / sizeof(p[0]); j++) {
+        for (int j = 0; j < n ; j++) {
             if (PS[i] <= p[j] && stat[j] == 1 && frg > p[j] - PS[i]) {
                 frg = p[j] - PS[i];
                 idx = j;
@@ -74,11 +73,12 @@ int main() {
     }
 
     printf("\nWorst Fit:\n");
-    for (int i = 0; i < sizeof(PS) / sizeof(PS[0]); i++) {
+    for (int i = 0; i < sizeofProc; i++) {
         int frg = -10000;
         int idx = 10000;
-        for (int j = 0; j < sizeof(p) / sizeof(p[0]); j++) {
-            if (PS[i] <= p[j] && stat[j] == 1 && frg < p[j] - PS[i]) {
+        for (int j = 0; j < n ; j++) {//check for the largest fragment //PS[i] <= p[j] && stat[j] == 1 && frg < p[j] - PS[i]
+            if (PS[i] <= p[j] && stat[j] == 1 && frg < p[j] - PS[i]) 
+            { 
                 frg = p[j] - PS[i];
                 idx = j;
             }
