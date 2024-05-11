@@ -66,9 +66,8 @@ int main() {
         if (rt[shortest_job] == 0) {
             completed++;
             int finish_time = current_time;
-            int turnaround_time = finish_time - at[shortest_job];
-            tat[shortest_job] = turnaround_time;
-            wt[shortest_job] = turnaround_time - bt[shortest_job];
+            tat[shortest_job] = finish_time - at[shortest_job];;
+            wt[shortest_job] = finish_time - at[shortest_job]; - bt[shortest_job];
 
             // Print process completion
             printf("%3d  |  P[%d]\n", current_time, shortest_job + 1);
