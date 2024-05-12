@@ -11,7 +11,7 @@ class Bus extends Thread{
                 System.out.println("Ticket Booked by : "+Thread.currentThread().getName());
             }
             catch(Exception e){
-                
+                System.out.println(e);
             }
         }else{
             System.out.println("House Full");
@@ -31,9 +31,9 @@ public class Multithreading_with_Synchronized {
         System.out.println("Synchronous");
         Bus b2 = new Bus(1);
         Thread t1 = new Thread(b2);
-        t1.setName("Prinkal");
+        t1.setName("Ansh");
         Thread t2 = new Thread(b2);
-        t2.setName("Priyanka");
+        t2.setName("Dev");
         t1.start();
         t2.start();
     }
