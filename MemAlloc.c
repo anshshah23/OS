@@ -5,6 +5,10 @@ int main() {
     int stat[] = {1, 1, 1, 1, 1};
     int PS[4];
     int tm = 0;
+    
+    int sizeofProc = sizeof(PS) / sizeof(PS[0]);
+    int n = sizeof(p) / sizeof(p[0]);
+    
     for (int i = 0; i < n; i++) {
         tm += p[i];
     }
@@ -16,9 +20,6 @@ int main() {
         printf("P%d: ", i + 1);
         scanf("%d", &p[i]);
     }
-
-    int sizeofProc = sizeof(PS) / sizeof(PS[0]);
-    int n = sizeof(p) / sizeof(p[0]);
 
     int amf = 0;
     int ambf = 0;

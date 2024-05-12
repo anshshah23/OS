@@ -19,6 +19,7 @@ void *philosopher(void *arg) {
         printf("Philosopher %d is hungry.\n", id);
         pthread_mutex_lock(&forks[left_fork]);
         pthread_mutex_lock(&forks[right_fork]);
+        
         printf("Philosopher %d is eating.\n", id);
         sleep(rand() % 3 + 1); // eating
 

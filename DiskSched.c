@@ -9,7 +9,7 @@ void CLOOK(int requests[], int n, int head);
 void SSTF(int requests[], int n, int head);
 void SCAN(int requests[], int n, int head, bool direction);
 void CSCAN(int requests[], int n, int head);
-
+void FCFS(int requests[], int n, int head);
 int main() {
     int requests[MAX_REQUESTS];
     int n, head;
