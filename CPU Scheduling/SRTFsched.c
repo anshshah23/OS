@@ -3,7 +3,7 @@
 #include <limits.h> // Include limits.h for INT_MAX
 
 int main() {
-    int i, j, p, current_time = 0, completed = 0;
+    int i, j, p, currTime = 0, completed = 0;
     printf("Enter the number of processes: ");
     scanf("%d", &p);
 
@@ -43,35 +43,35 @@ int main() {
 
     // Run the scheduling algorithm
     while (completed < p) {
-        int shortest_job = -1;
-        int shortest_burst = INT_MAX;
+        int sjob = -1;
+        int sburst = INT_MAX;
 
         for (i = 0; i < p; i++) {
-            if (at[i] <= current_time && rt[i] < shortest_burst && rt[i] > 0) {
-                shortest_job = i;
-                shortest_burst = rt[i];
+            if (at[i] <= currTime && rt[i] < sburst && rt[i] > 0) {
+                sjob = i;
+                sburst = rt[i];
             }
         }
 
-        if (shortest_job == -1) {
-            current_time++;
+        if (sjob == -1) {
+            currTime++;
             continue;
         }
 
         // Execute the shortest job for one unit
-        rt[shortest_job]--;
-        current_time++;
+        rt[sjob]--;
+        currTime++;
 
         // Check if the process is completed
-        if (rt[shortest_job] == 0) {
+        if (rt[sjob] == 0) {
             completed++;
-            int finish_time = current_time;
-            tat[shortest_job] = finish_time - at[shortest_job];;
-            wt[shortest_job] = finish_time - at[shortest_job]; - bt[shortest_job];
+            int finish_time = currTime;
+            tat[sjob] = finish_time - at[sjob];
+            wt[sjob] = finish_time - at[sjob] - bt[sjob];
 
             // Print process completion
-            printf("%3d  |  P[%d]\n", current_time, shortest_job + 1);
-            printf("     |  TAT: %d, WT: %d\n", tat[shortest_job], wt[shortest_job]);
+            printf("%3d  |  P[%d]\n", currTime, sjob + 1);
+            printf("     |  TAT: %d, WT: %d\n", tat[sjob], wt[sjob]);
         }
     }
 

@@ -75,6 +75,33 @@ void LRU(int pages[], int n, int capacity) {
     printf("LRU Page Faults: %d\n", pageFaults);
 }
 
+// Function to find the index of the page to be replaced (for Optimal)
+int findPageToReplaceOptimal(int pages[], int n, int memory[], int capacity, int currentIndex) {
+    int farthest = currentIndex;
+    int index = -1;
+
+    for (int i = 0; i < capacity; ++i) {
+        int j;
+        for (j = currentIndex + 1; j < n; ++j) {
+            if (memory[i] == pages[j]) {
+                if (j > farthest) {
+                    farthest = j;
+                    index = i;
+                }
+                break;
+            }
+        }
+        if (j == n) {
+            return i;
+        }
+    }
+
+    if (index == -1) {
+        return 0;
+    }
+
+    return index;
+}
 // Optimal Page Replacement Algorithm
 void Optimal(int pages[], int n, int capacity) {
     int pageFaults = 0;
@@ -143,34 +170,6 @@ void LFU(int pages[], int n, int capacity) {
     }
 
     printf("LFU Page Faults: %d\n", pageFaults);
-}
-
-// Function to find the index of the page to be replaced (for Optimal)
-int findPageToReplaceOptimal(int pages[], int n, int memory[], int capacity, int currentIndex) {
-    int farthest = currentIndex;
-    int index = -1;
-
-    for (int i = 0; i < capacity; ++i) {
-        int j;
-        for (j = currentIndex + 1; j < n; ++j) {
-            if (memory[i] == pages[j]) {
-                if (j > farthest) {
-                    farthest = j;
-                    index = i;
-                }
-                break;
-            }
-        }
-        if (j == n) {
-            return i;
-        }
-    }
-
-    if (index == -1) {
-        return 0;
-    }
-
-    return index;
 }
 
 int main() {
